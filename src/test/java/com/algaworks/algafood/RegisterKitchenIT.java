@@ -2,6 +2,7 @@ package com.algaworks.algafood;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,13 +22,16 @@ public class RegisterKitchenIT {
     @LocalServerPort
     private int port;
 
+    @Before
+    public void setUp(){
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+        RestAssured.port = port;
+        RestAssured.basePath = "/kitchens";
+    }
+
     @Test
     public void mustReturnStatus200_WhenQueryKitchens(){
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-
             given()
-                    .basePath("/kitchens")
-                    .port(port)
                     .accept(ContentType.JSON)
                 .when()
                     .get()
@@ -37,11 +41,7 @@ public class RegisterKitchenIT {
 
     @Test
     public void mustHave4Kitchens_WhenQueryKitchens(){
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-
             given()
-                    .basePath("/kitchens")
-                    .port(port)
                     .accept(ContentType.JSON)
                 .when()
                     .get()
