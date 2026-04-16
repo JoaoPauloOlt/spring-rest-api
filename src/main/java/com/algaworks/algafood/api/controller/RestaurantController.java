@@ -1,7 +1,7 @@
 package com.algaworks.algafood.api.controller;
 
+import com.algaworks.algafood.core.validation.ValidationException;
 import com.algaworks.algafood.domain.exception.BusinessException;
-import com.algaworks.algafood.domain.exception.EntityNotFoundException;
 import com.algaworks.algafood.domain.exception.KitchenNotFoundException;
 import com.algaworks.algafood.domain.model.Restaurant;
 import com.algaworks.algafood.domain.repository.RestaurantRepository;
@@ -18,10 +18,8 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.ObjectName;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +85,7 @@ public class RestaurantController {
         validator.validate(restaurant, bindingResult);
 
         if (bindingResult.hasErrors()){
-            throw new ValidationException(String.valueOf(bindingResult));
+            throw new ValidationException(bindingResult);
         }
     }
 
