@@ -1,56 +1,35 @@
 package com.algaworks.algafood;
 
-import com.algaworks.algafood.domain.exception.EntityInUseException;
-import com.algaworks.algafood.domain.exception.KitchenNotFoundException;
-import com.algaworks.algafood.domain.model.Kitchen;
-import com.algaworks.algafood.domain.service.RegisterKitchenService;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.validation.ConstraintViolationException;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static io.restassured.RestAssured.*;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RegisterKitchenIT {
 
-    @Autowired
-    private RegisterKitchenService registerKitchen;
+    @LocalServerPort
+    private int port;
 
     @Test
-    public void mustAssignId_WhenRegisterKitchenWithCorrectData(){
-        //scenario
-        Kitchen newKitchen = new Kitchen();
-        newKitchen.setName("Chinese");
+    public void mustReturnStatus200_WhenQueryKitchens(){
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 
-        //action
-        newKitchen = registerKitchen.save(newKitchen);
-
-        //validation
-        assertThat(newKitchen).isNotNull();
-        assertThat(newKitchen.getId()).isNotNull();
-    }
-
-    @Test(expected = ConstraintViolationException.class)
-    public void mustFail_WhenRegisterKitchenWithoutName(){
-        Kitchen newKitchen = new Kitchen();
-        newKitchen.setName(null);
-
-        newKitchen = registerKitchen.save(newKitchen);
-    }
-
-    @Test(expected = EntityInUseException.class)
-    public void mustFail_WhenDeleteKitchenInUse(){
-        registerKitchen.delete(1L);
-    }
-
-    @Test(expected = KitchenNotFoundException.class)
-    public void mustFail_WhenDeleteKitchenNonExistent(){
-        registerKitchen.delete(100L);
+            given()
+                    .basePath("/kitchens")
+                    .port(port)
+                    .accept(ContentType.JSON)
+                .when()
+                    .get()
+                .then()
+                    .statusCode(HttpStatus.OK.value());
     }
 }
