@@ -1,5 +1,7 @@
 package com.algaworks.algafood;
 
+import com.algaworks.algafood.domain.exception.EntityInUseException;
+import com.algaworks.algafood.domain.exception.KitchenNotFoundException;
 import com.algaworks.algafood.domain.model.Kitchen;
 import com.algaworks.algafood.domain.service.RegisterKitchenService;
 import org.junit.Test;
@@ -21,7 +23,7 @@ public class RegisterKitchenIntegrationTests {
     private RegisterKitchenService registerKitchen;
 
     @Test
-    public void testRegisterKitchenWithSuccess(){
+    public void mustAssignId_WhenRegisterKitchenWithCorrectData(){
         //scenario
         Kitchen newKitchen = new Kitchen();
         newKitchen.setName("Chinese");
@@ -35,10 +37,20 @@ public class RegisterKitchenIntegrationTests {
     }
 
     @Test(expected = ConstraintViolationException.class)
-    public void testRegisterKitchenWithoutName(){
+    public void mustFail_WhenRegisterKitchenWithoutName(){
         Kitchen newKitchen = new Kitchen();
         newKitchen.setName(null);
 
         newKitchen = registerKitchen.save(newKitchen);
+    }
+
+    @Test(expected = EntityInUseException.class)
+    public void mustFail_WhenDeleteKitchenInUse(){
+        registerKitchen.delete(1L);
+    }
+
+    @Test(expected = KitchenNotFoundException.class)
+    public void mustFail_WhenDeleteKitchenNonExistent(){
+        registerKitchen.delete(100L);
     }
 }
