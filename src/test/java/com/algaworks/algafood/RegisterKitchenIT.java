@@ -41,12 +41,23 @@ public class RegisterKitchenIT {
 
     @Test
     public void mustHave4Kitchens_WhenQueryKitchens(){
-            given()
+        given()
                     .accept(ContentType.JSON)
                 .when()
                     .get()
                 .then()
                     .body("", hasSize(4))
                     .body("name", hasItems("Indiana", "Thai"));
+    }
+
+    public void mustReturnStatus2001_WhenRegisterKitchen(){
+        given()
+                    .body("{ \"name\": \"Chinese\" }")
+                    .contentType(ContentType.JSON)
+                    .accept(ContentType.JSON)
+                .when()
+                    .post()
+                .then()
+                    .statusCode(HttpStatus.CREATED.value());
     }
 }
