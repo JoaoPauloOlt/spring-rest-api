@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static io.restassured.RestAssured.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.hasSize;
 
 
 @RunWith(SpringRunner.class)
@@ -31,5 +33,20 @@ public class RegisterKitchenIT {
                     .get()
                 .then()
                     .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void mustHave4Kitchens_WhenQueryKitchens(){
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+
+            given()
+                    .basePath("/kitchens")
+                    .port(port)
+                    .accept(ContentType.JSON)
+                .when()
+                    .get()
+                .then()
+                    .body("", hasSize(4))
+                    .body("name", hasItems("Indiana", "Thai"));
     }
 }
