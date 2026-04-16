@@ -2,6 +2,7 @@ package com.algaworks.algafood.domain.model;
 
 import com.algaworks.algafood.core.validation.Groups;
 import com.algaworks.algafood.core.validation.Multiple;
+import com.algaworks.algafood.core.validation.ValueZeroIncludeDescription;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,6 +21,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@ValueZeroIncludeDescription(valueField = "shippingFee",
+descriptionField = "name", descriptionRequired = "free shipping")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
@@ -36,7 +39,6 @@ public class Restaurant {
 
     @NotNull
     @PositiveOrZero
-    @Multiple(number = 5)
     @Column(name = "shipping_fee", nullable = false)
     private BigDecimal shippingFee;
 

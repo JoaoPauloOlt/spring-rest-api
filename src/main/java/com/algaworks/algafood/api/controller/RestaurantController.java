@@ -1,7 +1,7 @@
 package com.algaworks.algafood.api.controller;
 
+import com.algaworks.algafood.core.validation.ValidationException;
 import com.algaworks.algafood.domain.exception.BusinessException;
-import com.algaworks.algafood.domain.exception.EntityNotFoundException;
 import com.algaworks.algafood.domain.exception.KitchenNotFoundException;
 import com.algaworks.algafood.domain.model.Restaurant;
 import com.algaworks.algafood.domain.repository.RestaurantRepository;
@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +33,9 @@ public class RestaurantController {
 
     @Autowired
     private RegisterRestaurantService registerRestaurant;
+
+    @Autowired
+    private SmartValidator validator;
 
     @GetMapping
     public List<Restaurant> list(){
@@ -70,19 +75,27 @@ public class RestaurantController {
         Restaurant restaurantActual = registerRestaurant.searchOrError(restaurantId);
 
         merge(fields, restaurantActual, request);
+        validate(restaurantActual, "restaurant");
 
-        try {
-            return update(restaurantId, restaurantActual);
-        }catch (EntityNotFoundException e){
-            throw new BusinessException(e.getMessage());
+        return update(restaurantId, restaurantActual);
+    }
+
+    private void validate(Restaurant restaurant, String objectName){
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(restaurant, objectName);
+        validator.validate(restaurant, bindingResult);
+
+        if (bindingResult.hasErrors()){
+            throw new ValidationException(bindingResult);
         }
     }
 
     private void merge(Map<String, Object> dataOrigin, Restaurant restaurantDestination, HttpServletRequest request){
 
         ServletServerHttpRequest serverHttpRequest = new ServletServerHttpRequest(request);
+
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+
             Restaurant restaurantOrigin = objectMapper.convertValue(dataOrigin, Restaurant.class);
 
             dataOrigin.forEach((nameProperty, valueProperty) -> {
