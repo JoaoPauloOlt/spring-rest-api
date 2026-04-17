@@ -2,8 +2,10 @@ package com.algaworks.algafood.api.controller;
 
 import com.algaworks.algafood.api.model.KitchenModel;
 import com.algaworks.algafood.api.model.RestaurantModel;
+import com.algaworks.algafood.api.model.input.RestaurantInput;
 import com.algaworks.algafood.domain.exception.BusinessException;
 import com.algaworks.algafood.domain.exception.KitchenNotFoundException;
+import com.algaworks.algafood.domain.model.Kitchen;
 import com.algaworks.algafood.domain.model.Restaurant;
 import com.algaworks.algafood.domain.repository.RestaurantRepository;
 import com.algaworks.algafood.domain.service.RegisterRestaurantService;
@@ -41,8 +43,10 @@ public class RestaurantController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RestaurantModel add(@RequestBody @Valid Restaurant restaurant){
+    public RestaurantModel add(@RequestBody @Valid RestaurantInput restaurantInput){
         try {
+            Restaurant restaurant = toDomainObject(restaurantInput);
+
             return toModel(registerRestaurant.save(restaurant));
         }catch (KitchenNotFoundException e){
             throw new BusinessException(e.getMessage());
@@ -50,8 +54,9 @@ public class RestaurantController {
     }
 
     @PutMapping("/{restaurantId}")
-    public RestaurantModel update(@PathVariable Long restaurantId, @RequestBody @Valid Restaurant restaurant){
+    public RestaurantModel update(@PathVariable Long restaurantId, @RequestBody @Valid RestaurantInput restaurantInput){
         try {
+            Restaurant restaurant = toDomainObject(restaurantInput);
             Restaurant restaurantActual = registerRestaurant.searchOrError(restaurantId);
 
             BeanUtils.copyProperties(restaurant, restaurantActual, "id", "paymentMethods", "address", "dateRegister", "product");
@@ -80,5 +85,18 @@ public class RestaurantController {
         return restaurants.stream()
                 .map(this::toModel)
                 .collect(Collectors.toList());
+    }
+
+    private Restaurant toDomainObject(RestaurantInput restaurantInput){
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName(restaurantInput.getName());
+        restaurant.setShippingFee(restaurantInput.getShippingFee());
+
+        Kitchen kitchen = new Kitchen();
+        kitchen.setId(restaurantInput.getKitchen().getId());
+
+        restaurant.setKitchen(kitchen);
+
+        return restaurant;
     }
 }
