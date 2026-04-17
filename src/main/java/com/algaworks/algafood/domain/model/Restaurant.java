@@ -36,7 +36,6 @@ public class Restaurant {
 
     @NotNull
     @PositiveOrZero
-    @Multiple(number = 5)
     @Column(name = "shipping_fee", nullable = false)
     private BigDecimal shippingFee;
 

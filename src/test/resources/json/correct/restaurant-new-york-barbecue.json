@@ -1,0 +1,7 @@
+{
+  "name": "New York Barbecue",
+  "shippingFee": 12,
+  "kitchen": {
+    "id": 2
+  }
+}
