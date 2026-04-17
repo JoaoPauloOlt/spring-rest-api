@@ -55,7 +55,7 @@ public class RegisterKitchenIT {
     }
 
     @Test
-    public void mustReturnStatus200_WhenQueryKitchens(){
+    public void shouldReturn200_WhenQueryKitchens(){
             given()
                     .accept(ContentType.JSON)
                 .when()
@@ -65,7 +65,7 @@ public class RegisterKitchenIT {
     }
 
     @Test
-    public void mustReturnAmountCorrectKitchens_WhenQueryKitchens(){
+    public void shouldReturnAmountCorrectKitchens_WhenQueryKitchens(){
         given()
                     .accept(ContentType.JSON)
                 .when()
@@ -75,7 +75,7 @@ public class RegisterKitchenIT {
     }
 
     @Test
-    public void mustReturnStatus201_WhenRegisterKitchen(){
+    public void shouldReturn201_WhenRegisterKitchen(){
         given()
                     .body(jsonCorrectKitchenChinese)
                     .contentType(ContentType.JSON)
@@ -87,7 +87,7 @@ public class RegisterKitchenIT {
     }
 
     @Test
-    public void mustReturnResponseAndStatusCorrect_WhenQueryKitchenExistent(){
+    public void shouldReturnResponseAndStatusCorrect_WhenQueryKitchenExistent(){
         given()
                     .pathParam("kitchenId", kitchenAmerican.getId())
                     .accept(ContentType.JSON)
@@ -98,7 +98,8 @@ public class RegisterKitchenIT {
                 .body("name", equalTo(kitchenAmerican.getName()));
     }
 
-    public void mustReturnStatus404_WhenQueryKitchenNonExistent(){
+    @Test
+    public void shouldReturn404_WhenQueryKitchenNonExistent(){
         given()
                     .pathParam("kitchenId", KITCHEN_ID_NONEXISTENT)
                     .accept(ContentType.JSON)
