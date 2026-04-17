@@ -1,8 +1,10 @@
 package com.algaworks.algafood;
 
+import com.algaworks.algafood.domain.model.Kitchen;
+import com.algaworks.algafood.domain.repository.KitchenRepository;
+import com.algaworks.algafood.util.DatabaseCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.flywaydb.core.Flyway;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +29,10 @@ public class RegisterKitchenIT {
     private int port;
 
     @Autowired
-    private Flyway flyway;
+    private DatabaseCleaner databaseCleaner;
+
+    @Autowired
+    private KitchenRepository kitchenRepository;
 
     @Before
     public void setUp(){
@@ -35,7 +40,8 @@ public class RegisterKitchenIT {
         RestAssured.port = port;
         RestAssured.basePath = "/kitchens";
 
-        flyway.migrate();
+        databaseCleaner.clearTables();
+        prepareData();
     }
 
     @Test
@@ -49,17 +55,18 @@ public class RegisterKitchenIT {
     }
 
     @Test
-    public void mustHave4Kitchens_WhenQueryKitchens(){
+    public void mustHave2Kitchens_WhenQueryKitchens(){
         given()
                     .accept(ContentType.JSON)
                 .when()
                     .get()
                 .then()
-                    .body("", hasSize(4))
+                    .body("", hasSize(2))
                     .body("name", hasItems("Indiana", "Thai"));
     }
 
-    public void mustReturnStatus2001_WhenRegisterKitchen(){
+    @Test
+    public void mustReturnStatus201_WhenRegisterKitchen(){
         given()
                     .body("{ \"name\": \"Chinese\" }")
                     .contentType(ContentType.JSON)
@@ -68,5 +75,15 @@ public class RegisterKitchenIT {
                     .post()
                 .then()
                     .statusCode(HttpStatus.CREATED.value());
+    }
+
+    private void prepareData(){
+        Kitchen kitchen1 = new Kitchen();
+        kitchen1.setName("Thai");
+        kitchenRepository.save(kitchen1);
+
+        Kitchen kitchen2 = new Kitchen();
+        kitchen2.setName("American");
+        kitchenRepository.save(kitchen2);
     }
 }
