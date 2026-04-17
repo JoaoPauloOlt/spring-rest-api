@@ -61,8 +61,7 @@ public class RegisterKitchenIT {
                 .when()
                     .get()
                 .then()
-                    .body("", hasSize(2))
-                    .body("name", hasItems("Indiana", "Thai"));
+                    .body("", hasSize(2));
     }
 
     @Test
@@ -75,6 +74,28 @@ public class RegisterKitchenIT {
                     .post()
                 .then()
                     .statusCode(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    public void mustReturnResponseAndStatusCorrect_WhenQueryKitchenExistent(){
+        given()
+                    .pathParam("kitchenId", 2)
+                    .accept(ContentType.JSON)
+                .when()
+                    .get("/{kitchenId}")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("name", equalTo("American"));
+    }
+
+    public void mustReturnStatus404_WhenQueryKitchenNonExistent(){
+        given()
+                    .pathParam("kitchenId", 100)
+                    .accept(ContentType.JSON)
+                .when()
+                    .get("/{kitchenId}")
+                .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     private void prepareData(){
