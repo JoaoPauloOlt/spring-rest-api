@@ -1,11 +1,11 @@
 package com.algaworks.algafood.api.controller;
 
+import com.algaworks.algafood.api.assembler.RestaurantInputDisassembler;
 import com.algaworks.algafood.api.assembler.RestaurantModelAssembler;
 import com.algaworks.algafood.api.model.RestaurantModel;
 import com.algaworks.algafood.api.model.input.RestaurantInput;
 import com.algaworks.algafood.domain.exception.BusinessException;
 import com.algaworks.algafood.domain.exception.KitchenNotFoundException;
-import com.algaworks.algafood.domain.model.Kitchen;
 import com.algaworks.algafood.domain.model.Restaurant;
 import com.algaworks.algafood.domain.repository.RestaurantRepository;
 import com.algaworks.algafood.domain.service.RegisterRestaurantService;
@@ -30,6 +30,9 @@ public class RestaurantController {
     @Autowired
     private RestaurantModelAssembler restaurantModelAssembler;
 
+    @Autowired
+    private RestaurantInputDisassembler restaurantInputDisassembler;
+
     @GetMapping
     public List<RestaurantModel> list(){
         return restaurantModelAssembler.toCollectionModel(restaurantRepository.findAll());
@@ -46,7 +49,7 @@ public class RestaurantController {
     @ResponseStatus(HttpStatus.CREATED)
     public RestaurantModel add(@RequestBody @Valid RestaurantInput restaurantInput){
         try {
-            Restaurant restaurant = toDomainObject(restaurantInput);
+            Restaurant restaurant = restaurantInputDisassembler.toDomainObject(restaurantInput);
 
             return restaurantModelAssembler.toModel(registerRestaurant.save(restaurant));
         }catch (KitchenNotFoundException e){
@@ -57,7 +60,7 @@ public class RestaurantController {
     @PutMapping("/{restaurantId}")
     public RestaurantModel update(@PathVariable Long restaurantId, @RequestBody @Valid RestaurantInput restaurantInput){
         try {
-            Restaurant restaurant = toDomainObject(restaurantInput);
+            Restaurant restaurant = restaurantInputDisassembler.toDomainObject(restaurantInput);
             Restaurant restaurantActual = registerRestaurant.searchOrError(restaurantId);
 
             BeanUtils.copyProperties(restaurant, restaurantActual, "id", "paymentMethods", "address", "dateRegister", "product");
@@ -66,18 +69,5 @@ public class RestaurantController {
         }catch (KitchenNotFoundException e){
             throw new BusinessException(e.getMessage());
         }
-    }
-
-    private Restaurant toDomainObject(RestaurantInput restaurantInput){
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName(restaurantInput.getName());
-        restaurant.setShippingFee(restaurantInput.getShippingFee());
-
-        Kitchen kitchen = new Kitchen();
-        kitchen.setId(restaurantInput.getKitchen().getId());
-
-        restaurant.setKitchen(kitchen);
-
-        return restaurant;
     }
 }

@@ -3,7 +3,6 @@ package com.algaworks.algafood.api.assembler;
 import com.algaworks.algafood.api.model.KitchenModel;
 import com.algaworks.algafood.api.model.RestaurantModel;
 import com.algaworks.algafood.domain.model.Restaurant;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
