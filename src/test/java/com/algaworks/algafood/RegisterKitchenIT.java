@@ -3,6 +3,7 @@ package com.algaworks.algafood;
 import com.algaworks.algafood.domain.model.Kitchen;
 import com.algaworks.algafood.domain.repository.KitchenRepository;
 import com.algaworks.algafood.util.DatabaseCleaner;
+import com.algaworks.algafood.util.ResourceUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.Before;
@@ -25,6 +26,12 @@ import static org.hamcrest.Matchers.hasSize;
 @TestPropertySource("/application-test.properties")
 public class RegisterKitchenIT {
 
+    private static final int KITCHEN_ID_NONEXISTENT = 100;
+
+    private Kitchen kitchenAmerican;
+    private int amountKitchensRegisters;
+    private String jsonCorrectKitchenChinese;
+
     @LocalServerPort
     private int port;
 
@@ -39,6 +46,9 @@ public class RegisterKitchenIT {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         RestAssured.port = port;
         RestAssured.basePath = "/kitchens";
+
+        jsonCorrectKitchenChinese = ResourceUtils.getContentFromResource(
+                "/json/correct/kitchen-chinese.json");
 
         databaseCleaner.clearTables();
         prepareData();
@@ -55,19 +65,19 @@ public class RegisterKitchenIT {
     }
 
     @Test
-    public void mustHave2Kitchens_WhenQueryKitchens(){
+    public void mustReturnAmountCorrectKitchens_WhenQueryKitchens(){
         given()
                     .accept(ContentType.JSON)
                 .when()
                     .get()
                 .then()
-                    .body("", hasSize(2));
+                    .body("", hasSize(amountKitchensRegisters));
     }
 
     @Test
     public void mustReturnStatus201_WhenRegisterKitchen(){
         given()
-                    .body("{ \"name\": \"Chinese\" }")
+                    .body(jsonCorrectKitchenChinese)
                     .contentType(ContentType.JSON)
                     .accept(ContentType.JSON)
                 .when()
@@ -79,18 +89,18 @@ public class RegisterKitchenIT {
     @Test
     public void mustReturnResponseAndStatusCorrect_WhenQueryKitchenExistent(){
         given()
-                    .pathParam("kitchenId", 2)
+                    .pathParam("kitchenId", kitchenAmerican.getId())
                     .accept(ContentType.JSON)
                 .when()
                     .get("/{kitchenId}")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("name", equalTo("American"));
+                .body("name", equalTo(kitchenAmerican.getName()));
     }
 
     public void mustReturnStatus404_WhenQueryKitchenNonExistent(){
         given()
-                    .pathParam("kitchenId", 100)
+                    .pathParam("kitchenId", KITCHEN_ID_NONEXISTENT)
                     .accept(ContentType.JSON)
                 .when()
                     .get("/{kitchenId}")
@@ -99,12 +109,14 @@ public class RegisterKitchenIT {
     }
 
     private void prepareData(){
-        Kitchen kitchen1 = new Kitchen();
-        kitchen1.setName("Thai");
-        kitchenRepository.save(kitchen1);
+        Kitchen kitchenThai = new Kitchen();
+        kitchenThai.setName("Thai");
+        kitchenRepository.save(kitchenThai);
 
-        Kitchen kitchen2 = new Kitchen();
-        kitchen2.setName("American");
-        kitchenRepository.save(kitchen2);
+        kitchenAmerican = new Kitchen();
+        kitchenAmerican.setName("American");
+        kitchenRepository.save(kitchenAmerican);
+
+        amountKitchensRegisters = (int) kitchenRepository.count();
     }
 }
