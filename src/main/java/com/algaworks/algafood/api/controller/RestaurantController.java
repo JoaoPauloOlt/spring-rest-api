@@ -9,7 +9,6 @@ import com.algaworks.algafood.domain.exception.KitchenNotFoundException;
 import com.algaworks.algafood.domain.model.Restaurant;
 import com.algaworks.algafood.domain.repository.RestaurantRepository;
 import com.algaworks.algafood.domain.service.RegisterRestaurantService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -60,10 +59,9 @@ public class RestaurantController {
     @PutMapping("/{restaurantId}")
     public RestaurantModel update(@PathVariable Long restaurantId, @RequestBody @Valid RestaurantInput restaurantInput){
         try {
-            Restaurant restaurant = restaurantInputDisassembler.toDomainObject(restaurantInput);
             Restaurant restaurantActual = registerRestaurant.searchOrError(restaurantId);
 
-            BeanUtils.copyProperties(restaurant, restaurantActual, "id", "paymentMethods", "address", "dateRegister", "product");
+            restaurantInputDisassembler.copyToDomainObject(restaurantInput, restaurantActual);
 
             return restaurantModelAssembler.toModel(registerRestaurant.save(restaurantActual));
         }catch (KitchenNotFoundException e){
