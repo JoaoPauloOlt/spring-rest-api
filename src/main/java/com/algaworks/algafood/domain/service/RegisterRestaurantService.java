@@ -7,6 +7,7 @@ import com.algaworks.algafood.domain.repository.KitchenRepository;
 import com.algaworks.algafood.domain.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RegisterRestaurantService {
@@ -19,6 +20,7 @@ public class RegisterRestaurantService {
     @Autowired
     private RegisterKitchenService registerKitchen;
 
+    @Transactional
     public Restaurant save(Restaurant restaurant) {
         Long kitchenId = restaurant.getKitchen().getId();
 

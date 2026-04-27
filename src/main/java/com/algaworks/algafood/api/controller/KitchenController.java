@@ -1,5 +1,9 @@
 package com.algaworks.algafood.api.controller;
 
+import com.algaworks.algafood.api.assembler.KitchenInputDisassembler;
+import com.algaworks.algafood.api.assembler.KitchenModelAssembler;
+import com.algaworks.algafood.api.model.KitchenModel;
+import com.algaworks.algafood.api.model.input.KitchenInput;
 import com.algaworks.algafood.domain.model.Kitchen;
 import com.algaworks.algafood.domain.repository.KitchenRepository;
 import com.algaworks.algafood.domain.service.RegisterKitchenService;
@@ -21,29 +25,42 @@ public class KitchenController {
     @Autowired
     private RegisterKitchenService registerKitchen;
 
+    @Autowired
+    private KitchenModelAssembler kitchenModelAssembler;
+
+    @Autowired
+    private KitchenInputDisassembler kitchenInputDisassembler;
+
     @GetMapping
-    public List<Kitchen> list(){
-        return kitchenRepository.findAll();
+    public List<KitchenModel> list(){
+        List<Kitchen> allKitchens = kitchenRepository.findAll();
+
+        return kitchenModelAssembler.toCollectionModel(allKitchens);
     }
 
     @GetMapping("/{kitchenId}")
-    public Kitchen search(@PathVariable Long kitchenId){
-        return registerKitchen.searchOrError(kitchenId);
+    public KitchenModel search(@PathVariable Long kitchenId){
+        Kitchen kitchen = registerKitchen.searchOrError(kitchenId);
+
+        return kitchenModelAssembler.toModel(kitchen);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Kitchen add(@RequestBody @Valid Kitchen kitchen){
-       return registerKitchen.save(kitchen);
+    public KitchenModel add(@RequestBody @Valid KitchenInput kitchenInput){
+        Kitchen kitchen = kitchenInputDisassembler.toDomainObject(kitchenInput);
+        kitchen = registerKitchen.save(kitchen);
+
+       return kitchenModelAssembler.toModel(kitchen);
     }
 
     @PutMapping("/{kitchenId}")
-    public Kitchen update(@PathVariable Long kitchenId, @RequestBody @Valid Kitchen kitchen){
+    public KitchenModel update(@PathVariable Long kitchenId, @RequestBody @Valid KitchenInput kitchenInput){
         Kitchen kitchenActual = registerKitchen.searchOrError(kitchenId);
+        kitchenInputDisassembler.copyToDomainObject(kitchenInput, kitchenActual);
+        kitchenActual = registerKitchen.save(kitchenActual);
 
-        BeanUtils.copyProperties(kitchen, kitchenActual, "id");
-
-        return registerKitchen.save(kitchenActual);
+        return kitchenModelAssembler.toModel(kitchenActual);
     }
 
     @DeleteMapping("/{kitchenId}")

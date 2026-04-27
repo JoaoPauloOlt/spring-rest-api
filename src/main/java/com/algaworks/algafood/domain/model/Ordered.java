@@ -7,7 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,19 +32,19 @@ public class Ordered {
 
     @CreationTimestamp
     @Column(nullable = false, columnDefinition = "datetime")
-    private LocalDateTime dateCreation;
+    private OffsetDateTime dateCreation;
 
     @CreationTimestamp
     @Column(columnDefinition = "datetime")
-    private LocalDateTime dateConfirmation;
+    private OffsetDateTime dateConfirmation;
 
     @CreationTimestamp
     @Column(columnDefinition = "datetime")
-    private LocalDateTime dateCancellation;
+    private OffsetDateTime dateCancellation;
 
     @CreationTimestamp
     @Column(columnDefinition = "datetime")
-    private LocalDateTime dateDelivery;
+    private OffsetDateTime dateDelivery;
 
     @Embedded
     private Address addressDelivery;
