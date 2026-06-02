@@ -35,4 +35,12 @@ public class User {
     @ManyToMany
     @JoinTable(name = "user_grupo", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "grupo_id"))
     private List<Grupo> grupos = new ArrayList<>();
+
+    public boolean samePassword(String password){
+        return getPassword().equals(password);
+    }
+
+    public boolean notSamePassword(String password){
+        return !samePassword(password);
+    }
 }
