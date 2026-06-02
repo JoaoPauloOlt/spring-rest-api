@@ -5,6 +5,7 @@ import com.algaworks.algafood.api.assembler.RestaurantModelAssembler;
 import com.algaworks.algafood.api.model.RestaurantModel;
 import com.algaworks.algafood.api.model.input.RestaurantInput;
 import com.algaworks.algafood.domain.exception.BusinessException;
+import com.algaworks.algafood.domain.exception.CityNotFoundException;
 import com.algaworks.algafood.domain.exception.KitchenNotFoundException;
 import com.algaworks.algafood.domain.model.Restaurant;
 import com.algaworks.algafood.domain.repository.RestaurantRepository;
@@ -51,7 +52,7 @@ public class RestaurantController {
             Restaurant restaurant = restaurantInputDisassembler.toDomainObject(restaurantInput);
 
             return restaurantModelAssembler.toModel(registerRestaurant.save(restaurant));
-        }catch (KitchenNotFoundException e){
+        }catch (KitchenNotFoundException | CityNotFoundException e){
             throw new BusinessException(e.getMessage());
         }
     }
@@ -64,7 +65,7 @@ public class RestaurantController {
             restaurantInputDisassembler.copyToDomainObject(restaurantInput, restaurantActual);
 
             return restaurantModelAssembler.toModel(registerRestaurant.save(restaurantActual));
-        }catch (KitchenNotFoundException e){
+        }catch (KitchenNotFoundException | CityNotFoundException e){
             throw new BusinessException(e.getMessage());
         }
     }
