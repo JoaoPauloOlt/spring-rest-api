@@ -34,9 +34,6 @@ public class Restaurant {
     @JoinColumn(name = "kitchen_id", nullable = false)
     private Kitchen kitchen;
 
-    @OneToMany(mappedBy = "restaurant")
-    private List<Product> product = new ArrayList<>();
-
     @Embedded
     private Address address;
 
