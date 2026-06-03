@@ -71,7 +71,9 @@ insert into product (name, description, value, active, restaurant_id) values ('E
 insert into permission (id, name, description) values (1, 'QUERY_KITCHENS', 'Allow query kitchens');
 insert into permission (id, name, description) values (2, 'EDIT_KITCHENS', 'Allow edit kitchens');
 
-insert into grupo (name) values ('Manager'), ('Seller'), ('Secretary'), ('Registrar');
+insert into grupo (id, name) values (1,'Manager'), (2,'Seller'), (3,'Secretary'), (4,'Registrar');
+
+insert into grupo_permission (grupo_id, permission_id) VALUES (1,1),(1,2),(2,1),(2,2),(3,1);
 
 insert into user (id, name, email, password, date_register) values
     (1, 'João da Silva', 'joao.ger@algafood.com', '123', utc_timestamp),
