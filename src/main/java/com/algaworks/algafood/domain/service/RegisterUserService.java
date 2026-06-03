@@ -2,6 +2,7 @@ package com.algaworks.algafood.domain.service;
 
 import com.algaworks.algafood.domain.exception.BusinessException;
 import com.algaworks.algafood.domain.exception.UserNotFoundException;
+import com.algaworks.algafood.domain.model.Grupo;
 import com.algaworks.algafood.domain.model.User;
 import com.algaworks.algafood.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ public class RegisterUserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RegisterGrupoService registerGrupo;
 
     @Transactional
     public User save(User user){
@@ -37,6 +41,20 @@ public class RegisterUserService {
             throw new BusinessException("Current password entered does not match the user's password.");
         }
         user.setPassword(newPassword);
+    }
+
+    public void disassociate(Long userId, Long grupoId){
+        User user = searchOrFail(userId);
+        Grupo grupo = registerGrupo.searchOrFail(grupoId);
+
+        user.removeGrupo(grupo);
+    }
+
+    public void associate(Long userId, Long grupoId){
+        User user = searchOrFail(userId);
+        Grupo grupo = registerGrupo.searchOrFail(grupoId);
+
+        user.addGrupo(grupo);
     }
 
     public User searchOrFail(Long userId){
