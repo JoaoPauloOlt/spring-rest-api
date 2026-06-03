@@ -3,6 +3,7 @@ package com.algaworks.algafood.domain.service;
 import com.algaworks.algafood.domain.exception.RestaurantNotFoundException;
 import com.algaworks.algafood.domain.model.City;
 import com.algaworks.algafood.domain.model.Kitchen;
+import com.algaworks.algafood.domain.model.PaymentMethod;
 import com.algaworks.algafood.domain.model.Restaurant;
 import com.algaworks.algafood.domain.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class RegisterRestaurantService {
 
     @Autowired
     private RegisterCityService registerCity;
+
+    @Autowired
+    private RegisterPaymentMethodService registerPaymentMethod;
 
     @Transactional
     public Restaurant save(Restaurant restaurant) {
@@ -47,6 +51,22 @@ public class RegisterRestaurantService {
         Restaurant restaurantActual = searchOrError(restaurantId);
 
         restaurantActual.disable();
+    }
+
+    @Transactional
+    public void disassociatePaymentMethod(Long restaurantId, Long paymentMethodId){
+        Restaurant restaurant = searchOrError(restaurantId);
+        PaymentMethod paymentMethod = registerPaymentMethod.searchOrFail(paymentMethodId);
+
+        restaurant.deletePaymentMethod(paymentMethod);
+    }
+
+    @Transactional
+    public void associatePaymentMethod(Long restaurantId, Long paymentMethodId){
+        Restaurant restaurant = searchOrError(restaurantId);
+        PaymentMethod paymentMethod = registerPaymentMethod.searchOrFail(paymentMethodId);
+
+        restaurant.createPaymentMethod(paymentMethod);
     }
 
     public Restaurant searchOrError(Long restaurantId) {
