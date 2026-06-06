@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class RegisterRestaurantService {
 
@@ -51,6 +53,16 @@ public class RegisterRestaurantService {
         Restaurant restaurantActual = searchOrError(restaurantId);
 
         restaurantActual.disable();
+    }
+
+    @Transactional
+    public void activate(List<Long> restaurantIds){
+        restaurantIds.forEach(this::activate);
+    }
+
+    @Transactional
+    public void disable(List<Long> restaurantIds){
+        restaurantIds.forEach(this::disable);
     }
 
     @Transactional
