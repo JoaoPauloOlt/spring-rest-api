@@ -12,6 +12,7 @@ delete from restaurant;
 delete from restaurant_payment_method;
 delete from user;
 delete from user_grupo;
+delete from restaurant_user_responsible;
 
 set foreign_key_checks = 1;
 
@@ -40,12 +41,12 @@ insert into city (id, name, state_id) values (3, 'São Paulo', 2);
 insert into city (id, name, state_id) values (4, 'Campinas', 2);
 insert into city (id, name, state_id) values (5, 'Fortaleza', 3);
 
-insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active, address_city_id, address_cep, address_street, address_number, address_neighborhood) values ('Thai Gourmet', 10, 1,utc_timestamp, utc_timestamp, true, 1, '38400-999','Street João Pinheiro',1000,'Center');
-insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active) values ('Thai delivery', 15, 1,utc_timestamp, utc_timestamp, true);
-insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active) values ('Mak Mak Food Indiana', 15, 2,utc_timestamp, utc_timestamp, true);
-insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active) values ('Java Steakhouse', 12, 3, utc_timestamp, utc_timestamp, true);
-insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active) values ('sandwich do Tio Sam', 11, 4, utc_timestamp, utc_timestamp, true);
-insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active) values ('Bar da Maria', 6, 4, utc_timestamp, utc_timestamp, true);
+insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active, open, address_city_id, address_cep, address_street, address_number, address_neighborhood) values ('Thai Gourmet', 10, 1,utc_timestamp, utc_timestamp, true, true, 1, '38400-999','Street João Pinheiro',1000,'Center');
+insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active, open) values ('Thai delivery', 15, 1,utc_timestamp, utc_timestamp, true,true);
+insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active, open) values ('Mak Mak Food Indiana', 15, 2,utc_timestamp, utc_timestamp, true,true);
+insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active, open) values ('Java Steakhouse', 12, 3, utc_timestamp, utc_timestamp, true,true);
+insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active, open) values ('sandwich do Tio Sam', 11, 4, utc_timestamp, utc_timestamp, true,true);
+insert into restaurant (name, shipping_fee, kitchen_id, date_register, date_update, active, open) values ('Bar da Maria', 6, 4, utc_timestamp, utc_timestamp, true,true);
 
 insert into payment_method (id, description) values (1, 'Credit card');
 insert into payment_method (id, description) values (2, 'Debit card');
@@ -71,10 +72,17 @@ insert into product (name, description, value, active, restaurant_id) values ('E
 insert into permission (id, name, description) values (1, 'QUERY_KITCHENS', 'Allow query kitchens');
 insert into permission (id, name, description) values (2, 'EDIT_KITCHENS', 'Allow edit kitchens');
 
-insert into grupo (name) values ('Manager'), ('Seller'), ('Secretary'), ('Registrar');
+insert into grupo (id, name) values (1,'Manager'), (2,'Seller'), (3,'Secretary'), (4,'Registrar');
+
+insert into grupo_permission (grupo_id, permission_id) VALUES (1,1),(1,2),(2,1),(2,2),(3,1);
 
 insert into user (id, name, email, password, date_register) values
     (1, 'João da Silva', 'joao.ger@algafood.com', '123', utc_timestamp),
     (2, 'Maria Joaquina', 'maria.vnd@algafood.com', '123', utc_timestamp),
     (3, 'José Souza', 'jose.aux@algafood.com', '123', utc_timestamp),
-    (4, 'Sebastião Martins', 'sebastiao.cad@algafood.com', '123', utc_timestamp);
+    (4, 'Sebastião Martins', 'sebastiao.cad@algafood.com', '123', utc_timestamp),
+    (5,'Manoel Lima','manoel.loja@gmail.com','123',utc_timestamp);
+
+insert into restaurant_user_responsible (restaurant_id, user_id) values (1,5), (3,5);
+
+insert into user_grupo (user_id, grupo_id) values (1,1),(1,2),(2,2);

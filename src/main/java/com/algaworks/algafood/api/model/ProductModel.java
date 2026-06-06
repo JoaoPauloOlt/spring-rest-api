@@ -7,13 +7,11 @@ import java.math.BigDecimal;
 
 @Setter
 @Getter
-public class RestaurantModel {
+public class ProductModel {
 
     private Long id;
     private String name;
-    private BigDecimal shippingFee;
-    private KitchenModel kitchen;
+    private String description;
+    private BigDecimal price;
     private Boolean active;
-    private Boolean open;
-    private AddressModel address;
 }

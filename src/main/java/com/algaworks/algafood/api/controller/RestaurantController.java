@@ -7,6 +7,7 @@ import com.algaworks.algafood.api.model.input.RestaurantInput;
 import com.algaworks.algafood.domain.exception.BusinessException;
 import com.algaworks.algafood.domain.exception.CityNotFoundException;
 import com.algaworks.algafood.domain.exception.KitchenNotFoundException;
+import com.algaworks.algafood.domain.exception.RestaurantNotFoundException;
 import com.algaworks.algafood.domain.model.Restaurant;
 import com.algaworks.algafood.domain.repository.RestaurantRepository;
 import com.algaworks.algafood.domain.service.RegisterRestaurantService;
@@ -80,5 +81,37 @@ public class RestaurantController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void disable(@PathVariable Long restaurantId){
         registerRestaurant.disable(restaurantId);
+    }
+
+    @PutMapping("/activations")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void activateMass(@RequestBody List<Long> restaurantIds){
+        try {
+            registerRestaurant.activate(restaurantIds);
+        } catch (RestaurantNotFoundException e){
+            throw new BusinessException(e.getMessage(), e);
+        }
+    }
+
+    @DeleteMapping("activations")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void disableMass(@RequestBody List<Long> restaurantIds){
+        try {
+            registerRestaurant.disable(restaurantIds);
+        } catch (RestaurantNotFoundException e){
+            throw new BusinessException(e.getMessage(), e);
+        }
+    }
+
+    @PutMapping("/{restaurantId}/open")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void open(@PathVariable Long restaurantId){
+        registerRestaurant.open(restaurantId);
+    }
+
+    @PutMapping("/{restaurantId}/close")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void close(@PathVariable Long restaurantId){
+        registerRestaurant.close(restaurantId);
     }
 }

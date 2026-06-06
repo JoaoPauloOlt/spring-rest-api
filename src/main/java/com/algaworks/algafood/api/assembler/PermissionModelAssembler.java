@@ -1,7 +1,7 @@
 package com.algaworks.algafood.api.assembler;
 
-import com.algaworks.algafood.api.model.PaymentMethodModel;
-import com.algaworks.algafood.domain.model.PaymentMethod;
+import com.algaworks.algafood.api.model.PermissionModel;
+import com.algaworks.algafood.domain.model.Permission;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,17 +11,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class PaymentMethodModelAssembler {
+public class PermissionModelAssembler {
 
     @Autowired
     private ModelMapper modelMapper;
 
-    public PaymentMethodModel toModel(PaymentMethod paymentMethod){
-        return modelMapper.map(paymentMethod, PaymentMethodModel.class);
+    public PermissionModel toModel(Permission permission){
+        return modelMapper.map(permission, PermissionModel.class);
     }
 
-    public List<PaymentMethodModel> toCollectionModel(Collection<PaymentMethod> paymentMethods){
-        return paymentMethods.stream()
+    public List<PermissionModel> toCollectionModel(Collection<Permission> permissions){
+        return permissions.stream()
                 .map(this::toModel)
                 .collect(Collectors.toList());
     }
