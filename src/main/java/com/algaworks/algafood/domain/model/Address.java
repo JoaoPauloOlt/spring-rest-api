@@ -1,7 +1,6 @@
 package com.algaworks.algafood.domain.model;
 
 import lombok.Data;
-
 import javax.persistence.*;
 
 @Data
